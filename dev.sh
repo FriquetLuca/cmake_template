@@ -1,21 +1,35 @@
 #!/usr/bin/env bash
-set -e  # Exit on any error
+set -e
 
-# Path to the executable
-EXECUTABLE="./build/hello"
+# Determine OS to set executable extension
+EXT=""
+[[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]] && EXT=".exe"
 
-# Handle --rebuild flag
-if [[ "$1" == "--rebuild" ]]; then
+EXECUTABLE="./build/bin/hello$EXT"
+
+# Parse flags
+REBUILD=false
+BUILD_TYPE="--debug"  # Default
+
+for arg in "$@"; do
+    case $arg in
+        --rebuild) REBUILD=true ;;
+        --release) BUILD_TYPE="--release" ;;
+        --debug)   BUILD_TYPE="--debug" ;;
+    esac
+done
+
+# Handle rebuild or missing build
+if [[ "$REBUILD" == true ]]; then
     echo "🔁 Forcing rebuild..."
-    ./build.sh || { echo "❌ Build failed. Exiting."; exit 1; }
+    ./build.sh "$BUILD_TYPE" || { echo "❌ Build failed. Exiting."; exit 1; }
 else
-    # Check if build folder or executable is missing
     if [[ ! -d "build" ]] || [[ ! -f "$EXECUTABLE" ]]; then
         echo "📦 Build missing artifacts. Building project..."
-        ./build.sh || { echo "❌ Build failed. Exiting."; exit 1; }
+        ./build.sh "$BUILD_TYPE" || { echo "❌ Build failed. Exiting."; exit 1; }
     fi
 fi
 
-# Run the program once
+# Run the program
 echo "🚀 Running the program..."
 exec "$EXECUTABLE"

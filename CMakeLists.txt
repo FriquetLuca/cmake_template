@@ -9,6 +9,14 @@ add_subdirectory(src/utils)
 
 add_executable(hello src/main.cpp)
 
+# Force output name to "hello" regardless of build config
+set_target_properties(hello PROPERTIES OUTPUT_NAME "hello")
+
+# Optional: put the binary in build/bin/
+set_target_properties(hello PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # Link subdirectory libraries
 target_link_libraries(hello math utils)
 
