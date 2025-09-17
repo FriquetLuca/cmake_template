@@ -19,7 +19,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up CMake
-        uses: lukka/get-cmake@v3.27.7  # optional, you can use system CMake too
+        uses: lukka/get-cmake@latest  # optional, you can use system CMake too
+        with:
+          cmakeVersion: latestrc      # <--= optional, use the latest release candidate (notice the 'rc' suffix).
+          ninjaVersion: latest        # <--= optional, use the latest release (non candidate).
 
       - name: Configure CMake (Release)
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
