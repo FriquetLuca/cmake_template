@@ -30,7 +30,18 @@ jobs:
       - name: Prepare artifact
         run: |
           mkdir -p build/package
-          cp build/bin/hello* build/package/ || cp build/bin/hello.exe build/package/ || true
+
+          # Linux/macOS: single-config builds
+          if [[ -f build/bin/hello ]]; then
+            cp build/bin/hello build/package/
+          fi
+
+          # Windows: multi-config builds
+          if [[ -f build/bin/Release/hello.exe ]]; then
+            cp build/bin/Release/hello.exe build/package/
+          fi
+
+          # Archive the package
           cd build/package
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             7z a ../../release-${{ runner.os }}.zip *
